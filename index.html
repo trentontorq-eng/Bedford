@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trenton KnightNados #32254 &amp; TorqueNados JV #21363 — Bedford BIOBUZZ Live Dashboard</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --surface: #0f172a;
+    --surface-2: #162033;
+    --surface-3: #1e293b;
+    --border: rgba(148, 163, 184, 0.16);
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --primary: #2563eb;
+    --primary-bright: #60a5fa;
+    --gold: #f59e0b;
+    --gold-bright: #fbbf24;
+    --red: #ef4444;
+    --red-bg: rgba(239, 68, 68, 0.14);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59, 130, 246, 0.14);
+    --green: #10b981;
+    --green-bg: rgba(16, 185, 129, 0.14);
+    --amber: #f59e0b;
+    --amber-bg: rgba(245, 158, 11, 0.14);
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.45);
+  }
+  body.theme-32254 {
+    --primary: #1d4ed8;
+    --primary-bright: #60a5fa;
+    --gold: #fbbf24;
+  }
+  body.theme-21363 {
+    --primary: #eab308;
+    --primary-bright: #fde047;
+    --gold: #38bdf8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 12% 10%, rgba(37, 99, 235, 0.18), transparent 38%),
+      radial-gradient(circle at 88% 12%, rgba(245, 158, 11, 0.16), transparent 36%),
+      radial-gradient(rgba(245, 158, 11, 0.05) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 26px 26px;
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  a { color: var(--primary-bright); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { max-width: 1360px; margin: 0 auto; padding: 18px 18px 40px; }
+
+  /* Header */
+  .topbar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(22, 32, 51, 0.94));
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .topbar::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--gold), var(--primary));
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-badge {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--primary), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 20px; color: #0b1120;
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+    flex-shrink: 0;
+  }
+  .brand h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
+  .brand-sub { font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 2px; }
+  .live-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--green-bg); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.35);
+    padding: 2px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; text-transform: uppercase;
+  }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1; transform:scale(1);} 50%{opacity:0.4; transform:scale(1.3);} }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .btn {
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+    padding: 8px 13px; border-radius: 10px; font-size: 0.82rem; font-weight: 600;
+    cursor: pointer; transition: all 0.16s ease; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { border-color: var(--gold); transform: translateY(-1px); }
+  .btn-primary { background: linear-gradient(135deg, var(--primary), #1d4ed8); border-color: transparent; color: #fff; }
+  .btn-gold { background: linear-gradient(135deg, var(--gold), #d97706); border-color: transparent; color: #090d16; font-weight: 700; }
+  .btn-sm { padding: 5px 10px; font-size: 0.76rem; border-radius: 8px; }
+  .btn-active { border-color: var(--gold); background: rgba(245, 158, 11, 0.16); color: var(--gold-bright); }
+
+  /* Spotlight cards */
+  .spotlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 18px; }
+  .spot-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px 20px; position: relative; overflow: hidden; box-shadow: var(--shadow);
+  }
+  .spot-card.knight { border-top: 4px solid #3b82f6; }
+  .spot-card.torque { border-top: 4px solid #fbbf24; }
+  .spot-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+  .spot-team { font-size: 1.15rem; font-weight: 800; }
+  .spot-tag { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+  .dpi-badge {
+    text-align: right; background: var(--surface-2); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 10px;
+  }
+  .dpi-val { font-size: 1.3rem; font-weight: 900; color: var(--gold-bright); line-height: 1.1; }
+  .dpi-lbl { font-size: 0.68rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.05em; }
+  .spot-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .metric-box { background: var(--surface-2); border-radius: 10px; padding: 8px 10px; border: 1px solid var(--border); }
+  .metric-k { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .metric-v { font-size: 1rem; font-weight: 800; margin-top: 2px; }
+  .next-match-banner {
+    background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(96, 165, 250, 0.25);
+    border-radius: 10px; padding: 9px 12px; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .spot-card.torque .next-match-banner {
+    background: rgba(245, 158, 11, 0.12); border-color: rgba(251, 191, 36, 0.28);
+  }
+
+  /* Navigation Tabs */
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .tab-btn {
+    background: transparent; border: 1px solid transparent; color: var(--muted);
+    padding: 9px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+  }
+  .tab-btn.active { background: var(--surface-2); color: var(--gold-bright); border-color: var(--border); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Filters & Toolbar */
+  .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .input {
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; outline: none;
+  }
+  .input:focus { border-color: var(--gold); }
+
+  /* Match Cards */
+  .match-list { display: flex; flex-direction: column; gap: 12px; }
+  .match-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+  .match-card.focus-32254 { border-left: 4px solid #3b82f6; }
+  .match-card.focus-21363 { border-left: 4px solid #fbbf24; }
+  .match-top {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
+    margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .match-id { font-weight: 800; font-size: 0.98rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em;
+  }
+  .badge-blue { background: var(--blue-bg); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+  .badge-red { background: var(--red-bg); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+  .badge-gold { background: var(--amber-bg); color: #fbbf24; border: 1px solid rgba(245,158,11,0.35); }
+  .badge-green { background: var(--green-bg); color: #34d399; border: 1px solid rgba(16,185,129,0.35); }
+  .badge-muted { background: var(--surface-3); color: var(--muted); }
+
+  .alliances-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+  @media (max-width: 780px) { .alliances-grid { grid-template-columns: 1fr; } }
+  .alliance-box {
+    border-radius: 10px; padding: 10px 12px; border: 1px solid var(--border);
+  }
+  .alliance-box.red { background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.25); }
+  .alliance-box.blue { background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.25); }
+  .alliance-box.winner { box-shadow: 0 0 0 2px #10b981; }
+  .alliance-hdr { display: flex; justify-content: space-between; font-size: 0.74rem; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; color: var(--muted); }
+  .team-chip-row { display: flex; flex-direction: column; gap: 5px; }
+  .team-chip {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    background: rgba(15, 23, 42, 0.7); padding: 6px 9px; border-radius: 8px; font-size: 0.84rem; cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .team-chip:hover { border-color: var(--gold); }
+  .team-chip.ours { background: rgba(245, 158, 11, 0.16); border-color: rgba(251, 191, 36, 0.45); font-weight: 700; }
+
+  .vs-center { text-align: center; min-width: 170px; }
+  .prob-bar {
+    height: 12px; border-radius: 999px; overflow: hidden; display: flex; background: var(--surface-3);
+    margin: 6px 0; border: 1px solid var(--border);
+  }
+  .prob-red { background: linear-gradient(90deg, #dc2626, #ef4444); transition: width 0.3s ease; }
+  .prob-blue { background: linear-gradient(90deg, #3b82f6, #1d4ed8); transition: width 0.3s ease; }
+  .prob-labels { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; }
+  .score-entry { display: flex; gap: 6px; align-items: center; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+  .score-input {
+    width: 64px; text-align: center; background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text); padding: 5px; border-radius: 8px; font-weight: 800; font-size: 0.9rem;
+  }
+
+  /* Rankings Table */
+  .summary-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px;
+  }
+  .summary-tile {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px 14px;
+  }
+  .summary-tile .k { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .summary-tile .v { font-size: 1.15rem; font-weight: 800; margin-top: 2px; color: var(--gold-bright); }
+  .table-wrap {
+    overflow-x: auto; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { background: var(--surface-2); color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; user-select: none; }
+  th:hover, th.sorted { color: var(--gold-bright); }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  tr.row-ours td { background: rgba(245, 158, 11, 0.09); }
+  .delta-up { color: #34d399; font-weight: 700; font-size: 0.76rem; }
+  .delta-dn { color: #f87171; font-weight: 700; font-size: 0.76rem; }
+  .delta-flat { color: var(--muted); font-size: 0.76rem; }
+  .mini-bar-bg { width: 84px; height: 7px; background: var(--surface-3); border-radius: 999px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; }
+  .mini-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--gold)); border-radius: 999px; }
+
+  /* Methodology & Chart */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .card h3 { font-size: 1rem; margin-bottom: 10px; color: var(--gold-bright); }
+  .formula-box {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem;
+    color: #e2e8f0; margin: 10px 0; overflow-x: auto;
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.72); display: none;
+    align-items: center; justify-content: center; padding: 16px; z-index: 1000;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    max-width: 680px; width: 100%; max-height: 88vh; overflow-y: auto; padding: 20px 22px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.65);
+  }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .toast {
+    position: fixed; bottom: 20px; right: 20px; background: #10b981; color: #052e16;
+    padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: none; z-index: 2000;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">🌪️</div>
+      <div>
+        <h1>Trenton KnightNados #32254 &amp; TorqueNados JV #21363</h1>
+        <div class="brand-sub">
+          <span class="live-pill"><span class="live-dot"></span> Bedford BIOBUZZ Live (USMITEQ)</span>
+          <span>Nov 21, 2026 • Bedford Senior High School, Temperance, MI</span>
+          <span>• <a href="https://ftc-events.firstinspires.org/2026/USMITEQ" target="_blank" rel="noopener">FTC Events</a></span>
+          <span>• <a href="https://fimav.us/live/2026/USMITEQ" target="_blank" rel="noopener">FiM Live Stream</a></span>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-sm btn-active" id="themeBothBtn">Both Teams</button>
+      <button class="btn btn-sm" id="theme32254Btn">32254 Blue</button>
+      <button class="btn btn-sm" id="theme21363Btn">21363 Gold</button>
+      <button class="btn btn-primary btn-sm" id="syncLiveBtn">🔄 Sync FTCScout</button>
+      <button class="btn btn-gold btn-sm" id="shareStateBtn">🔗 Share Live Link</button>
+      <button class="btn btn-sm" id="resetBtn">↺ Reset</button>
+    </div>
+  </header>
+
+  <!-- TEAM SPOTLIGHTS -->
+  <section class="spotlight-grid" id="spotlightGrid"></section>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="schedule">📋 Match Schedule &amp; Live Win %</button>
+    <button class="tab-btn" data-tab="rankings">🏆 Live Rankings &amp; DPI (All 36 Teams)</button>
+    <button class="tab-btn" data-tab="methodology">⚡ Dynamic Power Index &amp; Charts</button>
+  </nav>
+
+  <!-- TAB 1: SCHEDULE -->
+  <section id="tab-schedule" class="tab-panel active">
+    <div class="toolbar">
+      <div class="pill-group" id="matchFilters">
+        <button class="btn btn-sm btn-active" data-filter="all">All Matches (10)</button>
+        <button class="btn btn-sm" data-filter="32254">32254 KnightNados (5)</button>
+        <button class="btn btn-sm" data-filter="21363">21363 TorqueNados JV (5)</button>
+        <button class="btn btn-sm" data-filter="upcoming">Upcoming</button>
+        <button class="btn btn-sm" data-filter="completed">Completed</button>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-gold btn-sm" id="openAddMatchBtn">+ Add Match</button>
+      </div>
+    </div>
+    <div class="match-list" id="matchList"></div>
+  </section>
+
+  <!-- TAB 2: LIVE RANKINGS & DPI -->
+  <section id="tab-rankings" class="tab-panel">
+    <div class="summary-strip" id="rankingsSummary"></div>
+    <div class="toolbar">
+      <div class="pill-group">
+        <input type="text" class="input" id="teamSearch" placeholder="Search team #, name, city, or school...">
+        <button class="btn btn-sm btn-active" id="rankModeDpiBtn">Sort by Live DPI Rank</button>
+        <button class="btn btn-sm" id="rankModeEventBtn">Sort by Event Standings (RP / W-L-T)</button>
+      </div>
+      <div style="font-size:0.8rem; color:var(--muted);">
+        Click any column header to sort or click a team row for full scouting &amp; source links.
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="rankingsTable">
+        <thead>
+          <tr>
+            <th data-sort="liveRank">Live DPI #</th>
+            <th data-sort="eventRank">Event #</th>
+            <th data-sort="teamNumber">Team</th>
+            <th data-sort="liveDpi">Live DPI</th>
+            <th data-sort="initDpi">Init DPI</th>
+            <th data-sort="todayRp">Today W-L-T / RP</th>
+            <th data-sort="todayAvg">Today Avg</th>
+            <th data-sort="bestOpr">2026 OPR</th>
+            <th data-sort="avgScore">2026 Avg</th>
+            <th data-sort="autoPts">Auto Pts</th>
+            <th>2026 Season Record &amp; Awards</th>
+          </tr>
+        </thead>
+        <tbody id="rankingsBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 3: METHODOLOGY & CHARTS -->
+  <section id="tab-methodology" class="tab-panel">
+    <div class="grid-2">
+      <div class="card">
+        <h3>⚡ Dynamic Power Index (DPI) Engine</h3>
+        <p style="font-size:0.86rem; color:var(--muted); margin-bottom:10px;">
+          Our live power system combines verified 2026–2027 BIOBUZZ season priors with real-time match adjustments throughout the Bedford Qualifier.
+        </p>
+        <div class="formula-box">
+Initial Power Rating (PR₀):
+PR₀ = 0.58·OPR + 0.22·(AvgScore/2) + 0.12·(Auto·1.3) + 0.08·(WinRate·50 + Awards·5)
+DPI₀ = clamp(20 + 0.72 · PR₀, 10, 99.9)
+
+Live Match Update (per completed match):
+Expected Alliance Score = (Team_PR + Partner_PR) · 1.05
+Score Delta = Actual_Score − Expected_Alliance_Score
+Partner Factor = clamp(1 + (Expected_Share_Gap), 0.75, 1.35)
+Opp Strength Factor = (Opp_Avg_PR / Field_Avg_PR)
+ΔPR = K_res·(Outcome − WinProb)·Opp_Factor + K_pts·(Score_Delta / 2)·Partner_Factor
+        </div>
+        <ul style="font-size:0.84rem; color:var(--muted); padding-left:18px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Scoring Performance:</strong> Outscoring your expected alliance total boosts both partners' Power Ratings.</li>
+          <li><strong>Alliance Strength:</strong> Carrying a lower-rated partner to a win or high score yields a larger positive adjustment.</li>
+          <li><strong>Competition Strength:</strong> Beating top-10 contenders accelerates your climb; narrow losses to powerhouses cushion drops.</li>
+          <li><strong>Live Match Win %:</strong> <code>P(Red) = 1 / (1 + 10^(-(Red_PR - Blue_PR) / 28))</code> updates across all upcoming matches in real time.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>📊 Top 12 + Trenton Teams (Initial vs. Live DPI)</h3>
+        <div id="dpiChartContainer" style="margin-top:8px;"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- TEAM SCOUTING MODAL -->
+<div class="modal-backdrop" id="teamModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle" style="font-size:1.15rem;">Team Details</h2>
+      <button class="btn btn-sm" id="closeTeamModal">✕ Close</button>
+    </div>
+    <div id="modalBody" style="font-size:0.88rem;"></div>
+  </div>
+</div>
+
+<!-- ADD MATCH MODAL -->
+<div class="modal-backdrop" id="addMatchModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-head">
+      <h2 style="font-size:1.1rem;">Add Qualification / Playoff Match</h2>
+      <button class="btn btn-sm" id="closeAddMatchModal">✕</button>
+    </div>
+    <form id="addMatchForm" style="display:flex; flex-direction:column; gap:10px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <label style="font-size:0.8rem;">Match # <input type="text" class="input" id="newMatchNum" placeholder="e.g. Q48" required style="width:100%; margin-top:4px;"></label>
+        <label style="font-size:0.8rem;">Field # <input type="number" class="input" id="newFieldNum" value="1" min="1" max="4" required style="width:100%; margin-top:4px;"></label>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <label style="font-size:0.8rem; color:#f87171;">Red 1 <input type="number" class="input" id="newRed1" required style="width:100%; margin-top:4px;"></label>
+        <label style="font-size:0.8rem; color:#f87171;">Red 2 <input type="number" class="input" id="newRed2" required style="width:100%; margin-top:4px;"></label>
+        <label style="font-size:0.8rem; color:#60a5fa;">Blue 1 <input type="number" class="input" id="newBlue1" required style="width:100%; margin-top:4px;"></label>
+        <label style="font-size:0.8rem; color:#60a5fa;">Blue 2 <input type="number" class="input" id="newBlue2" required style="width:100%; margin-top:4px;"></label>
+      </div>
+      <button type="submit" class="btn btn-gold" style="justify-content:center; margin-top:6px;">Add to Live Schedule</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+// =========================================================================
+// VERIFIED 2026-2027 BIOBUZZ DATASET FOR ALL 36 BEDFORD (USMITEQ) TEAMS
+// =========================================================================
+const TEAMS_DATA = [
+  { teamNumber: 10016, name: "Clarkston RoboWolves", org: "Sashabaw MS & Clarkston JHS", city: "Clarkston, MI", bestOpr: 104.8, avgScore: 102.6, autoPts: 32.4, w: 19, l: 1, t: 1, pedigree: 2, record: "19-1-1", awards: "Southgate Winning Alliance; FiM SE Champ Qualified", events: "OCCRA1 (6-0), OCCRA2 (5-0, 124.8 avg), Southgate (4-0-1, 5th), OCCRA4 (104.8 npOPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/10016" },
+  { teamNumber: 13684, name: "Infinity Tech", org: "East Middle School", city: "Canton, MI", bestOpr: 79.6, avgScore: 136.8, autoPts: 35.8, w: 8, l: 0, t: 0, pedigree: 2, record: "8-0-0", awards: "Royal Oak Winning Alliance Capt; Saline Inspire & Winner", events: "Saline Preview (Inspire, Win), Royal Oak (1/28, 5-0-0, 136.8 avg, 35.8 auto)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/13684" },
+  { teamNumber: 7215, name: "Turning Gears", org: "Bedford Junior High School", city: "Temperance, MI", bestOpr: 74.6, avgScore: 117.6, autoPts: 34.4, w: 3, l: 2, t: 0, pedigree: 1, record: "3-2-0", awards: "Southgate Alliance 2 (1st Pick)", events: "Southgate Qualifier (6/29, 3-2-0, 3.8 RP, 117.6 avg, 74.6 npOPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/7215" },
+  { teamNumber: 26606, name: "H.I.V.E.", org: "Saline Middle School", city: "Saline, MI", bestOpr: 68.6, avgScore: null, autoPts: null, w: 20, l: 5, t: 0, pedigree: 1, record: "20-5-0", awards: "4.60 RP at MSCRL Saline Meet 2", events: "Saline Preview (2-3), MSCRL Grass Lake (5-0), Whitmore Lake (4-1), Saline 1 (4-1), Saline 2 (5-0)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/26606" },
+  { teamNumber: 8579, name: "Classical Engineers", org: "Bedford Junior High School", city: "Temperance, MI", bestOpr: 71.6, avgScore: 106.0, autoPts: 20.8, w: 5, l: 3, t: 0, pedigree: 2, record: "5-3-0", awards: "Inspire Award 1st Place (Chelsea); FiM SE Champ Qualified", events: "Chelsea Qualifier (2/36, 4-1-0 qual, 106.0 avg, Alliance 2 Capt)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/8579" },
+  { teamNumber: 5237, name: "Loose Screws", org: "Bedford Junior High School", city: "Temperance, MI", bestOpr: 64.2, avgScore: 110.2, autoPts: 28.8, w: 4, l: 0, t: 1, pedigree: 2, record: "4-0-1", awards: "Southgate Winning Alliance Capt & Innovate Award", events: "Southgate Qualifier (4/29, 4-0-1, 4.2 RP, 110.2 avg, 64.2 npOPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/5237" },
+  { teamNumber: 8492, name: "Titanium Trojans", org: "Whitmore Lake High School", city: "Whitmore Lake, MI", bestOpr: 65.2, avgScore: 93.3, autoPts: 29.4, w: 10, l: 0, t: 0, pedigree: 1, record: "10-0-0 (SC)", awards: "Judges' Choice (Saline Preview)", events: "Saline Preview (1-4), SC League (6/28, 10-0-0, 93.3 avg, 65.2 npOPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/8492" },
+  { teamNumber: 15229, name: "Team KUDOS", org: "Parker Middle School", city: "Howell, MI", bestOpr: 42.0, avgScore: 79.6, autoPts: 34.4, w: 7, l: 3, t: 0, pedigree: 1, record: "7-3-0", awards: "Reach Award (Hartland); Finalist Alliance (Saline)", events: "Saline Preview (3-2, Finalist), Hartland (9/30, 4-1, 79.6 avg, 34.4 auto)", sourceUrl: "https://ftc-events.firstinspires.org/2026/USMIHOQ/rankings" },
+  { teamNumber: 21914, name: "Team KARMA", org: "Parker Middle School", city: "Howell, MI", bestOpr: 36.4, avgScore: 88.0, autoPts: 27.0, w: 6, l: 3, t: 0, pedigree: 2, record: "4-1-0 (6-3)", awards: "Inspire Award 2nd Place (Hartland); FiM SE Champ Qualified", events: "Hartland Qualifier (7/30, 4-1-0, 88.0 avg, 27.0 auto, Alliance 4 Pick)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/21914" },
+  { teamNumber: 10645, name: "Hornet Hackers", org: "Saline Middle School", city: "Saline, MI", bestOpr: 42.5, avgScore: 73.2, autoPts: null, w: 13, l: 12, t: 0, pedigree: 0, record: "13-12-0", awards: "None in 2026-27", events: "SC League Meets: Grass Lake (3-2), Whitmore (2-3), Saline 1 (1-4), Saline 2 (4-1, 73.2 avg)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/10645" },
+  { teamNumber: 21564, name: "Tech Titans Burgundy", org: "Southgate Community Schools", city: "Southgate, MI", bestOpr: 36.7, avgScore: 75.0, autoPts: 14.6, w: 3, l: 2, t: 0, pedigree: 1, record: "3-2-0", awards: "Design Award Winner (Southgate)", events: "Southgate Qualifier (10/29, 3-2-0, 75.0 avg, Alliance 6 Capt)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/21564" },
+  { teamNumber: 17181, name: "Vibranium Vikings", org: "Van Hoosen Middle School", city: "Rochester, MI", bestOpr: null, avgScore: 74.3, autoPts: 31.8, w: 5, l: 9, t: 1, pedigree: 2, record: "5-9-1", awards: "Inspire Award 3rd Place (Chelsea)", events: "OCCRA League (2-7-1, 74.3 avg), Chelsea Qualifier (10/36, 3-2-0, 31.8 auto)", sourceUrl: "https://ftc-events.firstinspires.org/2026/USMICHQ/rankings" },
+  { teamNumber: 8487, name: "Robo Toasters Orange", org: "Millennium Middle School", city: "South Lyon, MI", bestOpr: null, avgScore: 78.2, autoPts: 22.6, w: 2, l: 3, t: 0, pedigree: 1, record: "2-3-0", awards: "Design Award (Chelsea)", events: "Chelsea Qualifier (25/36, 2-3-0, 78.2 avg, 148-pt match high)", sourceUrl: "https://ftc-events.firstinspires.org/2026/USMICHQ/rankings" },
+  { teamNumber: 32254, name: "KnightNados", org: "Boyd W. Arthurs MS / Trenton", city: "Trenton, MI", bestOpr: 32.8, avgScore: 80.0, autoPts: 21.2, w: 3, l: 2, t: 0, pedigree: 0, record: "3-2-0", awards: "Rookie Year 2025", events: "Southgate Qualifier (11/29, 3-2-0, 2.6 RP, 80.0 avg, 21.2 auto, 32.8 OPR)", sourceUrl: "https://ftsee.app/team/32254", isOurs: true },
+  { teamNumber: 8580, name: "CyberDragons", org: "Oakview Middle School", city: "Lake Orion, MI", bestOpr: 33.2, avgScore: 65.6, autoPts: 24.6, w: 2, l: 3, t: 0, pedigree: 1, record: "2-3-0", awards: "Reach Award 2nd Place (Royal Oak)", events: "Royal Oak Qualifier (14/28, 2-3-0, 65.6 avg, 24.6 auto)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/8580" },
+  { teamNumber: 22415, name: "Robo Toasters Blue", org: "Millennium Middle School", city: "South Lyon, MI", bestOpr: 31.9, avgScore: 72.6, autoPts: 21.0, w: 3, l: 2, t: 0, pedigree: 1, record: "3-2-0", awards: "Control Award 2nd Place (Chelsea)", events: "Chelsea Qualifier (9/36, 3-2-0, 72.6 avg, Alliance 4 Pick)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/22415" },
+  { teamNumber: 6134, name: "Black Frogs", org: "Novi Middle School", city: "Novi, MI", bestOpr: 32.5, avgScore: null, autoPts: null, w: 4, l: 2, t: 0, pedigree: 1, record: "USMIOTQ Playoff", awards: "Connect Award 2nd Place (Lake Orion)", events: "Lake Orion Qualifier (32.5 npOPR, Alliance 3 Pick)", sourceUrl: "https://ftsee.app/event/2026/USMIOTQ" },
+  { teamNumber: 14670, name: "TerrorBytes", org: "McBride Middle School", city: "Belleville, MI", bestOpr: 31.8, avgScore: 64.4, autoPts: null, w: 10, l: 5, t: 0, pedigree: 0, record: "10-5-0", awards: "None in 2026-27", events: "Metro Detroit League (Yellow 4-1, Pink 2-3, Green 4-1, 64.4 avg)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/14670" },
+  { teamNumber: 15465, name: "Team KRASH", org: "Parker Middle School", city: "Howell, MI", bestOpr: 29.3, avgScore: 55.8, autoPts: 15.2, w: 4, l: 1, t: 0, pedigree: 2, record: "4-1-0", awards: "Sustain Award & Finalist Alliance Capt (Saline)", events: "Saline Preview (3/28, 4-1-0, 55.8 avg, Alliance 2 Capt)", sourceUrl: "https://ftc-events.firstinspires.org/2026/USMISAS/rankings" },
+  { teamNumber: 20511, name: "Bionic Bulldogs", org: "West Middle School", city: "Plymouth, MI", bestOpr: 24.8, avgScore: 71.8, autoPts: 28.4, w: 4, l: 1, t: 0, pedigree: 0, record: "4-1-0", awards: "Lakeview Alliance 4 Captain", events: "Lakeview Qualifier (6/35, 4-1-0, 71.8 avg, 28.4 auto)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/20511" },
+  { teamNumber: 7085, name: "F.L.A.G. Fight Like a Girl", org: "Bedford Public Schools", city: "Temperance, MI", bestOpr: 29.4, avgScore: 62.6, autoPts: 23.4, w: 1, l: 4, t: 0, pedigree: 0, record: "1-4-0", awards: "None in 2026-27", events: "Southgate Qualifier (23/29, 1-4-0, 62.6 avg, 23.4 auto)", sourceUrl: "https://ftsee.app/team/7085" },
+  { teamNumber: 16671, name: "Broncobots", org: "Meads Mill Middle School", city: "Northville, MI", bestOpr: 27.4, avgScore: 51.3, autoPts: 16.2, w: 3, l: 7, t: 0, pedigree: 0, record: "3-7-0", awards: "Rising OPR across MD Meets", events: "Metro Detroit League (12/18, 3-7-0, 51.3 avg, 27.4 npOPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/region/USMI/league/MD" },
+  { teamNumber: 6079, name: "Bionic Broncos", org: "Bedford Junior High School", city: "Temperance, MI", bestOpr: 26.5, avgScore: 54.2, autoPts: 20.2, w: 1, l: 4, t: 0, pedigree: 1, record: "1-4-0", awards: "Reach Award 2nd Place (Southgate)", events: "Southgate Qualifier (25/29, 1-4-0, 54.2 avg, 26.5 OPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/USMISOQ/rankings" },
+  { teamNumber: 5291, name: "TOWR The Oxford Wildcats", org: "Oxford Middle School", city: "Oxford, MI", bestOpr: 25.7, avgScore: 53.2, autoPts: 18.0, w: 3, l: 2, t: 0, pedigree: 1, record: "3-2-0", awards: "Reach Award 2nd Place (Bullock Creek)", events: "Bullock Creek Qualifier (14/34, 3-2-0, 53.2 avg, 25.7 OPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/5291" },
+  { teamNumber: 31913, name: "Tech Titans Silver", org: "Southgate Community Schools", city: "Southgate, MI", bestOpr: 22.6, avgScore: 68.6, autoPts: 17.4, w: 2, l: 3, t: 0, pedigree: 0, record: "2-3-0", awards: "Rookie Year 2025", events: "Southgate Qualifier (16/29, 2-3-0, 68.6 avg, 22.6 npOPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/31913" },
+  { teamNumber: 17463, name: "Terror Bytes 3.0", org: "Belleville Robotics", city: "Belleville, MI", bestOpr: 23.6, avgScore: 55.3, autoPts: 12.9, w: 4, l: 6, t: 0, pedigree: 0, record: "4-6-0", awards: "None in 2026-27", events: "Metro Detroit League (11/18, 4-6-0, 55.3 avg, 23.6 npOPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/region/USMI/league/MD" },
+  { teamNumber: 17104, name: "Scranton TechnoPups Black", org: "Scranton Middle School", city: "Brighton, MI", bestOpr: 21.7, avgScore: 60.8, autoPts: 19.8, w: 2, l: 3, t: 0, pedigree: 1, record: "2-3-0", awards: "Design Award 2nd Place (Hartland)", events: "Hartland Qualifier (20/30, 2-3-0, 60.8 avg, 21.7 npOPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/17104" },
+  { teamNumber: 22420, name: "Scranton TechnoPups Gray", org: "Scranton Middle School", city: "Brighton, MI", bestOpr: 21.6, avgScore: 55.0, autoPts: 15.2, w: 1, l: 4, t: 0, pedigree: 0, record: "1-4-0", awards: "None in 2026-27", events: "Hartland Qualifier (29/30, 1-4-0, 55.0 avg, 21.6 OPR)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/22420" },
+  { teamNumber: 16523, name: "Automated Eagles", org: "Emerson School", city: "Ann Arbor, MI", bestOpr: null, avgScore: 58.2, autoPts: 20.4, w: 1, l: 4, t: 0, pedigree: 0, record: "1-4-0", awards: "None in 2026-27", events: "Chelsea Qualifier (28/36, 1-4-0, 58.2 avg, 20.4 auto)", sourceUrl: "https://ftc-events.firstinspires.org/2026/USMICHQ/rankings" },
+  { teamNumber: 20294, name: "Bionic Bulldogs", org: "Petersburg Robotics", city: "Petersburg, MI", bestOpr: null, avgScore: 54.4, autoPts: 16.4, w: 2, l: 3, t: 0, pedigree: 1, record: "2-3-0", awards: "Judges' Choice Award (Hartland)", events: "Hartland Qualifier (19/30, 2-3-0, 54.4 avg, 16.4 auto)", sourceUrl: "https://ftc-events.firstinspires.org/2026/USMIHOQ/rankings" },
+  { teamNumber: 21363, name: "TorqueNados JV", org: "Boyd W. Arthurs MS / Trenton", city: "Trenton, MI", bestOpr: 12.9, avgScore: 57.4, autoPts: 21.8, w: 3, l: 2, t: 0, pedigree: 0, record: "3-2-0", awards: "EPA 20.2 (2025 Innovate 2nd)", events: "Southgate Qualifier (19/29, 3-2-0, 2.4 RP, 57.4 avg, 21.8 auto)", sourceUrl: "https://ftc-embeds.com/teams/21363", isOurs: true },
+  { teamNumber: 15447, name: "Scranton TechnoPups Orange", org: "Scranton Middle School", city: "Brighton, MI", bestOpr: null, avgScore: 36.4, autoPts: 16.8, w: 1, l: 4, t: 0, pedigree: 0, record: "1-4-0", awards: "None in 2026-27", events: "Hartland Qualifier (28/30, 1-4-0, 36.4 avg, 16.8 auto)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/15447" },
+  { teamNumber: 13550, name: "Code Red Robotics - M.E.D.I.C.S.", org: "Milan Middle School", city: "Milan, MI", bestOpr: null, avgScore: null, autoPts: null, w: 0, l: 0, t: 0, pedigree: 0, record: "Debut", awards: "2026-27 Season Debut", events: "Bedford Qualifier (USMITEQ) is first 2026-27 event", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/13550" },
+  { teamNumber: 13647, name: "Code Red Robotics - M.E.D.I.C.S.", org: "Milan Middle School", city: "Milan, MI", bestOpr: null, avgScore: null, autoPts: null, w: 0, l: 0, t: 0, pedigree: 0, record: "Debut", awards: "2026-27 Season Debut", events: "Bedford Qualifier (USMITEQ) is first 2026-27 event", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/13647" },
+  { teamNumber: 23581, name: "Electric Souls", org: "East Middle School", city: "Canton, MI", bestOpr: null, avgScore: null, autoPts: null, w: 0, l: 0, t: 0, pedigree: 0, record: "Debut", awards: "2026-27 Season Debut", events: "Bedford Qualifier (USMITEQ) is first 2026-27 event (Robot: Electron)", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/23581" },
+  { teamNumber: 23589, name: "Iron Eagles", org: "Mason Middle School", city: "Erie, MI", bestOpr: null, avgScore: null, autoPts: null, w: 0, l: 0, t: 0, pedigree: 0, record: "Debut", awards: "2026-27 Season Debut", events: "Bedford Qualifier (USMITEQ) is first 2026-27 event", sourceUrl: "https://ftc-events.firstinspires.org/2026/team/23589" }
+];
+
+// Initial Matches directly from uploaded pit whiteboard photos
+const DEFAULT_MATCHES = [
+  { id: "Q5",  matchNum: 5,  label: "Q5",  field: 1, red: [32254, 20511], blue: [8580, 7215],   redScore: null, blueScore: null, focus: 32254 },
+  { id: "Q7",  matchNum: 7,  label: "Q7",  field: 1, red: [21363, 15229], blue: [21914, 8492],  redScore: null, blueScore: null, focus: 21363 },
+  { id: "Q10", matchNum: 10, label: "Q10", field: 2, red: [17181, 6079],  blue: [16671, 32254], redScore: null, blueScore: null, focus: 32254 },
+  { id: "Q16", matchNum: 16, label: "Q16", field: 2, red: [22415, 7085],  blue: [21363, 16523], redScore: null, blueScore: null, focus: 21363 },
+  { id: "Q25", matchNum: 25, label: "Q25", field: 1, red: [21564, 21363], blue: [6134, 5237],   redScore: null, blueScore: null, focus: 21363 },
+  { id: "Q27", matchNum: 27, label: "Q27", field: 1, red: [16523, 32254], blue: [15229, 17104], redScore: null, blueScore: null, focus: 32254 },
+  { id: "Q31", matchNum: 31, label: "Q31", field: 1, red: [21363, 6079],  blue: [23581, 15465], redScore: null, blueScore: null, focus: 21363 },
+  { id: "Q34", matchNum: 34, label: "Q34", field: 2, red: [7085, 32254],  blue: [17463, 21914], redScore: null, blueScore: null, focus: 32254 },
+  { id: "Q39", matchNum: 39, label: "Q39", field: 1, red: [8492, 6134],   blue: [31913, 32254], redScore: null, blueScore: null, focus: 32254 },
+  { id: "Q45", matchNum: 45, label: "Q45", field: 1, red: [23589, 8580],  blue: [8487, 21363],  redScore: null, blueScore: null, focus: 21363 }
+];
+
+// =========================================================================
+// STATE & DYNAMIC POWER INDEX ENGINE
+// =========================================================================
+let matches = JSON.parse(JSON.stringify(DEFAULT_MATCHES));
+let officialRankings = {}; // optional override from FTCScout API
+let currentFilter = "all";
+let sortCol = "liveRank";
+let sortAsc = true;
+let teamMap = {};
+
+function computeInitialMetrics(t) {
+  const oprVal = t.bestOpr !== null ? t.bestOpr : (t.avgScore !== null ? t.avgScore * 0.44 : 22.0);
+  const avgVal = t.avgScore !== null ? t.avgScore : oprVal * 1.95;
+  const autoVal = t.autoPts !== null ? t.autoPts : oprVal * 0.35;
+  const games = (t.w || 0) + (t.l || 0) + (t.t || 0);
+  const wr = games > 0 ? ((t.w + 0.5 * t.t) / games) : 0.5;
+  const pr = 0.58 * oprVal + 0.22 * (avgVal * 0.5) + 0.12 * (autoVal * 1.3) + 0.08 * (wr * 50 + (t.pedigree || 0) * 5);
+  const dpi = Math.min(99.9, Math.max(10.0, 20 + pr * 0.72));
+  return { pr: +pr.toFixed(2), dpi: +dpi.toFixed(1) };
+}
+
+function winProbability(redPr, bluePr) {
+  return 1 / (1 + Math.pow(10, -(redPr - bluePr) / 28));
+}
+
+function recalculateAll() {
+  teamMap = {};
+  TEAMS_DATA.forEach(t => {
+    const init = computeInitialMetrics(t);
+    teamMap[t.teamNumber] = {
+      ...t,
+      initPr: init.pr,
+      initDpi: init.dpi,
+      livePr: init.pr,
+      liveDpi: init.dpi,
+      todayW: 0, todayL: 0, todayT: 0,
+      todayScoreSum: 0, todayMatches: 0, todayRpTotal: 0, todayRp: 0, todayAvg: null
+    };
+  });
+
+  // Initial ranks
+  const initSorted = Object.values(teamMap).sort((a, b) => b.initDpi - a.initDpi);
+  initSorted.forEach((t, idx) => { t.initRank = idx + 1; });
+
+  const fieldAvgPr = initSorted.reduce((s, t) => s + t.initPr, 0) / initSorted.length;
+
+  // Replay completed matches chronologically to update Dynamic Power Index
+  const completed = matches
+    .filter(m => m.redScore !== null && m.blueScore !== null && m.redScore !== "" && m.blueScore !== "")
+    .sort((a, b) => a.matchNum - b.matchNum);
+
+  completed.forEach(m => {
+    const rs = Number(m.redScore);
+    const bs = Number(m.blueScore);
+    const rTeams = m.red.map(n => teamMap[n]).filter(Boolean);
+    const bTeams = m.blue.map(n => teamMap[n]).filter(Boolean);
+    if (rTeams.length < 2 || bTeams.length < 2) return;
+
+    const redPr = rTeams[0].livePr + rTeams[1].livePr;
+    const bluePr = bTeams[0].livePr + bTeams[1].livePr;
+    const pRed = winProbability(redPr, bluePr);
+    const outcomeRed = rs > bs ? 1 : (rs < bs ? 0 : 0.5);
+
+    const expectedRedScore = redPr * 1.05;
+    const expectedBlueScore = bluePr * 1.05;
+    const redScoreDelta = rs - expectedRedScore;
+    const blueScoreDelta = bs - expectedBlueScore;
+
+    const redOppFactor = Math.max(0.65, Math.min(1.45, (bluePr / 2) / fieldAvgPr));
+    const blueOppFactor = Math.max(0.65, Math.min(1.45, (redPr / 2) / fieldAvgPr));
+
+    // Update Red
+    rTeams.forEach((tm, idx) => {
+      const partner = rTeams[1 - idx];
+      const partnerFactor = Math.max(0.75, Math.min(1.35, 1 + (tm.livePr - partner.livePr) / 120));
+      const dPr = 7.5 * (outcomeRed - pRed) * redOppFactor + 0.16 * (redScoreDelta / 2) * partnerFactor;
+      tm.livePr = Math.max(8, tm.livePr + dPr);
+      tm.liveDpi = +Math.min(99.9, Math.max(10.0, 20 + tm.livePr * 0.72)).toFixed(1);
+      tm.todayMatches++;
+      tm.todayScoreSum += rs;
+      if (rs > bs) { tm.todayW++; tm.todayRpTotal += 2; }
+      else if (rs < bs) { tm.todayL++; }
+      else { tm.todayT++; tm.todayRpTotal += 1; }
+    });
+
+    // Update Blue
+    bTeams.forEach((tm, idx) => {
+      const partner = bTeams[1 - idx];
+      const partnerFactor = Math.max(0.75, Math.min(1.35, 1 + (tm.livePr - partner.livePr) / 120));
+      const dPr = 7.5 * ((1 - outcomeRed) - (1 - pRed)) * blueOppFactor + 0.16 * (blueScoreDelta / 2) * partnerFactor;
+      tm.livePr = Math.max(8, tm.livePr + dPr);
+      tm.liveDpi = +Math.min(99.9, Math.max(10.0, 20 + tm.livePr * 0.72)).toFixed(1);
+      tm.todayMatches++;
+      tm.todayScoreSum += bs;
+      if (bs > rs) { tm.todayW++; tm.todayRpTotal += 2; }
+      else if (bs < rs) { tm.todayL++; }
+      else { tm.todayT++; tm.todayRpTotal += 1; }
+    });
+  });
+
+  // Compute today RP/Avg and merge official rankings if synced
+  Object.values(teamMap).forEach(t => {
+    const off = officialRankings[t.teamNumber];
+    if (off) {
+      t.todayW = off.wins ?? t.todayW;
+      t.todayL = off.losses ?? t.todayL;
+      t.todayT = off.ties ?? t.todayT;
+      t.todayRp = off.rp ?? (t.todayMatches > 0 ? +(t.todayRpTotal / t.todayMatches).toFixed(2) : 0);
+      t.todayAvg = off.avg ?? (t.todayMatches > 0 ? +(t.todayScoreSum / t.todayMatches).toFixed(1) : null);
+      t.officialEventRank = off.rank;
+    } else {
+      t.todayRp = t.todayMatches > 0 ? +(t.todayRpTotal / t.todayMatches).toFixed(2) : 0;
+      t.todayAvg = t.todayMatches > 0 ? +(t.todayScoreSum / t.todayMatches).toFixed(1) : null;
+      t.officialEventRank = null;
+    }
+  });
+
+  // Live DPI ranks
+  const liveSorted = Object.values(teamMap).sort((a, b) => b.liveDpi - a.liveDpi);
+  liveSorted.forEach((t, idx) => {
+    t.liveRank = idx + 1;
+    t.rankDelta = t.initRank - t.liveRank;
+  });
+
+  // Event Standings ranks (Official if available, otherwise Today RP -> Today Avg -> Live DPI)
+  const eventSorted = Object.values(teamMap).sort((a, b) => {
+    if (a.officialEventRank && b.officialEventRank) return a.officialEventRank - b.officialEventRank;
+    if (a.officialEventRank) return -1;
+    if (b.officialEventRank) return 1;
+    if (b.todayRp !== a.todayRp) return b.todayRp - a.todayRp;
+    if ((b.todayAvg ?? -1) !== (a.todayAvg ?? -1)) return (b.todayAvg ?? -1) - (a.todayAvg ?? -1);
+    return b.liveDpi - a.liveDpi;
+  });
+  eventSorted.forEach((t, idx) => {
+    t.eventRank = t.officialEventRank || (idx + 1);
+  });
+}
+
+// =========================================================================
+// RENDERING
+// =========================================================================
+function renderSpotlights() {
+  const grid = document.getElementById("spotlightGrid");
+  const focusNums = [32254, 21363];
+  grid.innerHTML = focusNums.map(num => {
+    const t = teamMap[num];
+    const isKnight = num === 32254;
+    const nextM = matches.find(m => (m.red.includes(num) || m.blue.includes(num)) && (m.redScore === null || m.blueScore === null));
+    let nextHtml = `<span style="color:#34d399; font-weight:700;">All scheduled matches completed!</span>`;
+    if (nextM) {
+      const onRed = nextM.red.includes(num);
+      const partnerNum = (onRed ? nextM.red : nextM.blue).find(x => x !== num);
+      const redPr = nextM.red.reduce((s, x) => s + (teamMap[x]?.livePr || 30), 0);
+      const bluePr = nextM.blue.reduce((s, x) => s + (teamMap[x]?.livePr || 30), 0);
+      const pWin = onRed ? winProbability(redPr, bluePr) : (1 - winProbability(redPr, bluePr));
+      nextHtml = `
+        <span><strong>Next: ${nextM.label} (Field ${nextM.field})</strong> • ${onRed ? "🔴 Red" : "🔵 Blue"} w/ #${partnerNum}</span>
+        <span class="badge ${pWin >= 0.5 ? 'badge-green' : 'badge-gold'}">${Math.round(pWin * 100)}% Win Prob</span>
+      `;
+    }
+    const deltaStr = t.rankDelta > 0 ? `<span class="delta-up">▲${t.rankDelta}</span>` : (t.rankDelta < 0 ? `<span class="delta-dn">▼${Math.abs(t.rankDelta)}</span>` : `<span class="delta-flat">—</span>`);
+    const todayAvg = t.todayAvg !== null ? t.todayAvg : "—";
+    return `
+      <div class="spot-card ${isKnight ? 'knight' : 'torque'}">
+        <div class="spot-head">
+          <div>
+            <div class="spot-team">${isKnight ? '⚔️' : '⚡'} #${t.teamNumber} ${t.name}</div>
+            <div class="spot-tag">${t.org} • ${t.city} • Prior: ${t.record} (${t.bestOpr} OPR)</div>
+          </div>
+          <div class="dpi-badge">
+            <div class="dpi-val">${t.liveDpi}</div>
+            <div class="dpi-lbl">Live DPI (Init ${t.initDpi})</div>
+          </div>
+        </div>
+        <div class="spot-metrics">
+          <div class="metric-box"><div class="metric-k">DPI / Event #</div><div class="metric-v">#${t.liveRank} ${deltaStr} / #${t.eventRank}</div></div>
+          <div class="metric-box"><div class="metric-k">Today W-L-T</div><div class="metric-v">${t.todayW}-${t.todayL}-${t.todayT}</div></div>
+          <div class="metric-box"><div class="metric-k">Today Avg</div><div class="metric-v">${todayAvg}</div></div>
+          <div class="metric-box"><div class="metric-k">2026 Avg</div><div class="metric-v">${t.avgScore}</div></div>
+        </div>
+        <div class="next-match-banner">${nextHtml}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderMatches() {
+  const list = document.getElementById("matchList");
+  const filtered = matches.filter(m => {
+    const done = m.redScore !== null && m.blueScore !== null && m.redScore !== "" && m.blueScore !== "";
+    if (currentFilter === "32254") return m.red.includes(32254) || m.blue.includes(32254);
+    if (currentFilter === "21363") return m.red.includes(21363) || m.blue.includes(21363);
+    if (currentFilter === "upcoming") return !done;
+    if (currentFilter === "completed") return done;
+    return true;
+  }).sort((a, b) => a.matchNum - b.matchNum);
+
+  const fieldAvgDpi = Object.values(teamMap).reduce((s, t) => s + t.liveDpi, 0) / 36;
+
+  list.innerHTML = filtered.map(m => {
+    const r0 = teamMap[m.red[0]] || { teamNumber: m.red[0], name: "Team", liveDpi: 35, livePr: 25 };
+    const r1 = teamMap[m.red[1]] || { teamNumber: m.red[1], name: "Team", liveDpi: 35, livePr: 25 };
+    const b0 = teamMap[m.blue[0]] || { teamNumber: m.blue[0], name: "Team", liveDpi: 35, livePr: 25 };
+    const b1 = teamMap[m.blue[1]] || { teamNumber: m.blue[1], name: "Team", liveDpi: 35, livePr: 25 };
+
+    const redPr = r0.livePr + r1.livePr;
+    const bluePr = b0.livePr + b1.livePr;
+    const redAvgDpi = ((r0.liveDpi + r1.liveDpi) / 2).toFixed(1);
+    const blueAvgDpi = ((b0.liveDpi + b1.liveDpi) / 2).toFixed(1);
+
+    const pRed = Math.round(winProbability(redPr, bluePr) * 100);
+    const pBlue = 100 - pRed;
+
+    const ourOnRed = m.red.includes(32254) || m.red.includes(21363);
+    const oppAvgDpi = ourOnRed ? Number(blueAvgDpi) : Number(redAvgDpi);
+    let compBadge = `<span class="badge badge-muted">Comp Strength: ${oppAvgDpi} DPI</span>`;
+    if (oppAvgDpi >= fieldAvgDpi + 6) compBadge = `<span class="badge badge-red">🔥 Tough Opp: ${oppAvgDpi} DPI</span>`;
+    else if (oppAvgDpi <= fieldAvgDpi - 5) compBadge = `<span class="badge badge-green">✅ Favorable Opp: ${oppAvgDpi} DPI</span>`;
+
+    const done = m.redScore !== null && m.blueScore !== null && m.redScore !== "" && m.blueScore !== "";
+    const redWon = done && Number(m.redScore) > Number(m.blueScore);
+    const blueWon = done && Number(m.blueScore) > Number(m.redScore);
+    const focusClass = m.red.includes(32254) || m.blue.includes(32254) ? "focus-32254" : (m.red.includes(21363) || m.blue.includes(21363) ? "focus-21363" : "");
+
+    const renderTeamChip = (tm) => `
+      <div class="team-chip ${tm.isOurs ? 'ours' : ''}" data-team="${tm.teamNumber}">
+        <span><strong>#${tm.teamNumber}</strong> ${tm.name}</span>
+        <span style="font-size:0.75rem; color:var(--muted);">DPI ${tm.liveDpi} (#${tm.liveRank || '-'})</span>
+      </div>`;
+
+    return `
+      <div class="match-card ${focusClass}">
+        <div class="match-top">
+          <div class="match-id">
+            <span>${m.label}</span>
+            <span class="badge badge-muted">Field ${m.field}</span>
+            ${(m.red.includes(32254) || m.blue.includes(32254)) ? '<span class="badge badge-blue">32254 KnightNados</span>' : ''}
+            ${(m.red.includes(21363) || m.blue.includes(21363)) ? '<span class="badge badge-gold">21363 TorqueNados JV</span>' : ''}
+            ${compBadge}
+          </div>
+          <div>
+            ${done ? `<span class="badge badge-green">Final: ${m.redScore} – ${m.blueScore}</span>` : `<span class="badge badge-muted">Upcoming</span>`}
+          </div>
+        </div>
+        <div class="alliances-grid">
+          <div class="alliance-box red ${redWon ? 'winner' : ''}">
+            <div class="alliance-hdr"><span>🔴 Red Alliance</span><span>Strength: ${redAvgDpi} DPI</span></div>
+            <div class="team-chip-row">${renderTeamChip(r0)}${renderTeamChip(r1)}</div>
+          </div>
+          <div class="vs-center">
+            <div style="font-size:0.72rem; color:var(--muted); text-transform:uppercase; font-weight:700;">Live Win %</div>
+            <div class="prob-bar">
+              <div class="prob-red" style="width:${pRed}%"></div>
+              <div class="prob-blue" style="width:${pBlue}%"></div>
+            </div>
+            <div class="prob-labels">
+              <span style="color:#f87171;">Red ${pRed}%</span>
+              <span style="color:#60a5fa;">Blue ${pBlue}%</span>
+            </div>
+            <div class="score-entry">
+              <input type="number" class="score-input" placeholder="Red" value="${m.redScore ?? ''}" data-mid="${m.id}" data-side="red">
+              <span style="color:var(--muted); font-weight:800;">:</span>
+              <input type="number" class="score-input" placeholder="Blue" value="${m.blueScore ?? ''}" data-mid="${m.id}" data-side="blue">
+              <button class="btn btn-sm btn-primary save-score-btn" data-mid="${m.id}">Update</button>
+            </div>
+          </div>
+          <div class="alliance-box blue ${blueWon ? 'winner' : ''}">
+            <div class="alliance-hdr"><span>🔵 Blue Alliance</span><span>Strength: ${blueAvgDpi} DPI</span></div>
+            <div class="team-chip-row">${renderTeamChip(b0)}${renderTeamChip(b1)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderRankings() {
+  const all = Object.values(teamMap);
+  const completedCount = matches.filter(m => m.redScore !== null && m.blueScore !== null && m.redScore !== "" && m.blueScore !== "").length;
+  const topTeam = [...all].sort((a, b) => a.liveRank - b.liveRank)[0];
+  const k = teamMap[32254];
+  const t = teamMap[21363];
+
+  document.getElementById("rankingsSummary").innerHTML = `
+    <div class="summary-tile"><div class="k">Field Leader (Live DPI)</div><div class="v">#${topTeam.teamNumber} (${topTeam.liveDpi})</div></div>
+    <div class="summary-tile"><div class="k">32254 KnightNados</div><div class="v">DPI #${k.liveRank} (${k.liveDpi}) • Evt #${k.eventRank}</div></div>
+    <div class="summary-tile"><div class="k">21363 TorqueNados JV</div><div class="v">DPI #${t.liveRank} (${t.liveDpi}) • Evt #${t.eventRank}</div></div>
+    <div class="summary-tile"><div class="k">Matches Scored Today</div><div class="v">${completedCount} / ${matches.length}</div></div>
+  `;
+
+  const q = document.getElementById("teamSearch").value.trim().toLowerCase();
+  const rows = all.filter(tm =>
+    !q || String(tm.teamNumber).includes(q) || tm.name.toLowerCase().includes(q) || tm.city.toLowerCase().includes(q) || tm.org.toLowerCase().includes(q)
+  ).sort((a, b) => {
+    const va = a[sortCol] ?? -999;
+    const vb = b[sortCol] ?? -999;
+    return sortAsc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+  });
+
+  document.querySelectorAll("#rankingsTable th[data-sort]").forEach(th => {
+    th.classList.toggle("sorted", th.dataset.sort === sortCol);
+  });
+
+  document.getElementById("rankingsBody").innerHTML = rows.map(tm => {
+    const delta = tm.rankDelta > 0 ? `<span class="delta-up">▲${tm.rankDelta}</span>` : (tm.rankDelta < 0 ? `<span class="delta-dn">▼${Math.abs(tm.rankDelta)}</span>` : `<span class="delta-flat">—</span>`);
+    const dpiDiff = (tm.liveDpi - tm.initDpi).toFixed(1);
+    const dpiDiffHtml = dpiDiff > 0 ? `<span class="delta-up">+${dpiDiff}</span>` : (dpiDiff < 0 ? `<span class="delta-dn">${dpiDiff}</span>` : ``);
+    return `
+      <tr class="${tm.isOurs ? 'row-ours' : ''}" data-team="${tm.teamNumber}" style="cursor:pointer;">
+        <td><strong>#${tm.liveRank}</strong> ${delta}</td>
+        <td><span class="badge ${tm.officialEventRank ? 'badge-green' : 'badge-muted'}">#${tm.eventRank}</span></td>
+        <td><strong>#${tm.teamNumber}</strong> ${tm.name}<div style="font-size:0.74rem; color:var(--muted);">${tm.org} • ${tm.city}</div></td>
+        <td>
+          <strong style="color:var(--gold-bright);">${tm.liveDpi}</strong> ${dpiDiffHtml}
+          <span class="mini-bar-bg"><span class="mini-bar-fill" style="width:${tm.liveDpi}%"></span></span>
+        </td>
+        <td>${tm.initDpi} <span style="font-size:0.72rem; color:var(--muted);">(#${tm.initRank})</span></td>
+        <td>${tm.todayW}-${tm.todayL}-${tm.todayT} <span style="color:var(--muted); font-size:0.76rem;">(${tm.todayRp.toFixed(2)} RP)</span></td>
+        <td>${tm.todayAvg !== null ? tm.todayAvg : '—'}</td>
+        <td>${tm.bestOpr !== null ? tm.bestOpr : '—'}</td>
+        <td>${tm.avgScore !== null ? tm.avgScore : '—'}</td>
+        <td>${tm.autoPts !== null ? tm.autoPts : '—'}</td>
+        <td style="white-space:normal; min-width:220px; font-size:0.78rem;">${tm.record} • ${tm.awards}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function renderChart() {
+  const top = Object.values(teamMap).sort((a, b) => b.liveDpi - a.liveDpi).slice(0, 12);
+  [32254, 21363].forEach(num => {
+    if (!top.find(x => x.teamNumber === num)) top.push(teamMap[num]);
+  });
+  document.getElementById("dpiChartContainer").innerHTML = top.map(t => `
+    <div style="margin-bottom:8px;">
+      <div style="display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:2px;">
+        <span style="font-weight:${t.isOurs ? '800' : '600'}; color:${t.isOurs ? 'var(--gold-bright)' : 'var(--text)'};">#${t.teamNumber} ${t.name}</span>
+        <span>Init ${t.initDpi} → <strong>${t.liveDpi}</strong></span>
+      </div>
+      <div style="height:10px; background:var(--surface-2); border-radius:999px; overflow:hidden; position:relative;">
+        <div style="height:100%; width:${t.liveDpi}%; background:${t.isOurs ? 'linear-gradient(90deg, var(--primary), var(--gold))' : 'linear-gradient(90deg, #3b82f6, #60a5fa)'}; border-radius:999px;"></div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderAll() {
+  recalculateAll();
+  renderSpotlights();
+  renderMatches();
+  renderRankings();
+  renderChart();
+  saveToLocalStorage();
+}
+
+// =========================================================================
+// PERSISTENCE, SHARING & LIVE FTCSCOUT SYNC
+// =========================================================================
+function saveToLocalStorage() {
+  try { localStorage.setItem("bedford_biobuzz_matches_v1", JSON.stringify(matches)); } catch(e) {}
+}
+
+function loadState() {
+  if (location.hash.startsWith("#state=")) {
+    try {
+      const decoded = JSON.parse(decodeURIComponent(atob(location.hash.slice(7))));
+      if (Array.isArray(decoded) && decoded.length > 0) { matches = decoded; return; }
+    } catch(e) {}
+  }
+  try {
+    const saved = localStorage.getItem("bedford_biobuzz_matches_v1");
+    if (saved) matches = JSON.parse(saved);
+  } catch(e) {}
+}
+
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 2600);
+}
+
+async function syncFTCScout() {
+  const btn = document.getElementById("syncLiveBtn");
+  btn.textContent = "⏳ Syncing...";
+  try {
+    const query = `query { eventByCode(season: 2026, code: "USMITEQ") { matches { id matchNum tournamentLevel hasBeenPlayed teams { teamNumber alliance } scores { ... on MatchScores2026 { red { totalPoints } blue { totalPoints } } } } teams { teamNumber stats { ... on TeamEventStats2026 { rank rp wins losses ties avg { totalPointsNp } } } } } }`;
+    const res = await fetch("https://api.ftcscout.org/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query })
+    });
+    const json = await res.json();
+    const ev = json?.data?.eventByCode;
+    const apiMatches = ev?.matches || [];
+    const apiTeams = ev?.teams || [];
+    apiTeams.forEach(at => {
+      if (at.stats && at.stats.rank) {
+        officialRankings[at.teamNumber] = {
+          rank: at.stats.rank, rp: at.stats.rp,
+          wins: at.stats.wins, losses: at.stats.losses, ties: at.stats.ties,
+          avg: at.stats.avg?.totalPointsNp ?? null
+        };
+      }
+    });
+    if (apiMatches.length === 0 && Object.keys(officialRankings).length === 0) {
+      showToast("USMITEQ live data not yet posted on FTCScout — enter scores inline!");
+    } else {
+      let updated = 0;
+      apiMatches.forEach(am => {
+        const red = am.teams.filter(t => t.alliance === "Red").map(t => t.teamNumber);
+        const blue = am.teams.filter(t => t.alliance === "Blue").map(t => t.teamNumber);
+        const existing = matches.find(m => m.matchNum === am.matchNum);
+        const rScore = am.hasBeenPlayed ? (am.scores?.red?.totalPoints ?? null) : null;
+        const bScore = am.hasBeenPlayed ? (am.scores?.blue?.totalPoints ?? null) : null;
+        if (existing) {
+          if (rScore !== null && bScore !== null) { existing.redScore = rScore; existing.blueScore = bScore; updated++; }
+        } else if (red.includes(32254) || blue.includes(32254) || red.includes(21363) || blue.includes(21363)) {
+          matches.push({ id: "Q" + am.matchNum, matchNum: am.matchNum, label: "Q" + am.matchNum, field: 1, red, blue, redScore: rScore, blueScore: bScore });
+          updated++;
+        }
+      });
+      renderAll();
+      showToast(`Synced ${apiMatches.length} matches & live rankings (${updated} updated)!`);
+    }
+  } catch (err) {
+    showToast("Live API unreachable right now — use inline score entry!");
+  }
+  btn.textContent = "🔄 Sync FTCScout";
+}
+
+// =========================================================================
+// EVENT LISTENERS (NO INLINE HANDLERS)
+// =========================================================================
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+  });
+});
+
+document.getElementById("matchFilters").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-filter]");
+  if (!btn) return;
+  document.querySelectorAll("#matchFilters button").forEach(b => b.classList.remove("btn-active"));
+  btn.classList.add("btn-active");
+  currentFilter = btn.dataset.filter;
+  renderMatches();
+});
+
+document.getElementById("matchList").addEventListener("click", e => {
+  const saveBtn = e.target.closest(".save-score-btn");
+  if (saveBtn) {
+    const mid = saveBtn.dataset.mid;
+    const m = matches.find(x => x.id === mid);
+    if (!m) return;
+    const rInp = document.querySelector(`.score-input[data-mid="${mid}"][data-side="red"]`);
+    const bInp = document.querySelector(`.score-input[data-mid="${mid}"][data-side="blue"]`);
+    m.redScore = rInp.value === "" ? null : Number(rInp.value);
+    m.blueScore = bInp.value === "" ? null : Number(bInp.value);
+    renderAll();
+    showToast(`Updated ${m.label} — Live Rankings & DPI recalculated!`);
+    return;
+  }
+  const chip = e.target.closest(".team-chip[data-team]");
+  if (chip) openTeamModal(Number(chip.dataset.team));
+});
+
+document.getElementById("rankingsBody").addEventListener("click", e => {
+  const row = e.target.closest("tr[data-team]");
+  if (row) openTeamModal(Number(row.dataset.team));
+});
+
+document.querySelectorAll("#rankingsTable th[data-sort]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = th.dataset.sort;
+    if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = (col === "liveRank" || col === "eventRank" || col === "teamNumber"); }
+    renderRankings();
+  });
+});
+
+document.getElementById("rankModeDpiBtn").addEventListener("click", () => {
+  sortCol = "liveRank"; sortAsc = true;
+  document.getElementById("rankModeDpiBtn").classList.add("btn-active");
+  document.getElementById("rankModeEventBtn").classList.remove("btn-active");
+  renderRankings();
+});
+document.getElementById("rankModeEventBtn").addEventListener("click", () => {
+  sortCol = "eventRank"; sortAsc = true;
+  document.getElementById("rankModeEventBtn").classList.add("btn-active");
+  document.getElementById("rankModeDpiBtn").classList.remove("btn-active");
+  renderRankings();
+});
+
+document.getElementById("teamSearch").addEventListener("input", renderRankings);
+
+function openTeamModal(num) {
+  const t = teamMap[num];
+  if (!t) return;
+  document.getElementById("modalTitle").textContent = `#${t.teamNumber} ${t.name}`;
+  document.getElementById("modalBody").innerHTML = `
+    <p style="color:var(--muted); margin-bottom:10px;">${t.org} • ${t.city}</p>
+    <div class="spot-metrics" style="margin-bottom:12px;">
+      <div class="metric-box"><div class="metric-k">DPI Rank</div><div class="metric-v">#${t.liveRank}</div></div>
+      <div class="metric-box"><div class="metric-k">Event Rank</div><div class="metric-v">#${t.eventRank}</div></div>
+      <div class="metric-box"><div class="metric-k">Live DPI</div><div class="metric-v">${t.liveDpi}</div></div>
+      <div class="metric-box"><div class="metric-k">2026 OPR</div><div class="metric-v">${t.bestOpr ?? '—'}</div></div>
+    </div>
+    <p><strong>Today:</strong> ${t.todayW}-${t.todayL}-${t.todayT} (${t.todayRp.toFixed(2)} RP, Avg: ${t.todayAvg ?? '—'})</p>
+    <p style="margin-top:6px;"><strong>2026–27 Season:</strong> ${t.record} &nbsp;|&nbsp; <strong>Avg:</strong> ${t.avgScore ?? '—'} &nbsp;|&nbsp; <strong>Auto:</strong> ${t.autoPts ?? '—'}</p>
+    <p style="margin-top:6px;"><strong>Events Attended:</strong> ${t.events}</p>
+    <p style="margin-top:6px;"><strong>Awards &amp; Notes:</strong> ${t.awards}</p>
+    <p style="margin-top:12px;"><a href="${t.sourceUrl}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Open Official 2026 Team Page ↗</a></p>
+  `;
+  document.getElementById("teamModal").classList.add("open");
+}
+
+document.getElementById("closeTeamModal").addEventListener("click", () => document.getElementById("teamModal").classList.remove("open"));
+document.getElementById("teamModal").addEventListener("click", e => { if (e.target.id === "teamModal") e.target.classList.remove("open"); });
+
+document.getElementById("openAddMatchBtn").addEventListener("click", () => document.getElementById("addMatchModal").classList.add("open"));
+document.getElementById("closeAddMatchModal").addEventListener("click", () => document.getElementById("addMatchModal").classList.remove("open"));
+document.getElementById("addMatchForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const label = document.getElementById("newMatchNum").value.trim().toUpperCase();
+  const num = parseInt(label.replace(/\D/g, "")) || (matches.length + 50);
+  matches.push({
+    id: label + "_" + Date.now(),
+    matchNum: num,
+    label,
+    field: Number(document.getElementById("newFieldNum").value),
+    red: [Number(document.getElementById("newRed1").value), Number(document.getElementById("newRed2").value)],
+    blue: [Number(document.getElementById("newBlue1").value), Number(document.getElementById("newBlue2").value)],
+    redScore: null, blueScore: null
+  });
+  document.getElementById("addMatchModal").classList.remove("open");
+  e.target.reset();
+  renderAll();
+  showToast(`Added ${label} to schedule!`);
+});
+
+document.getElementById("themeBothBtn").addEventListener("click", () => { document.body.className = ""; setThemeBtn("themeBothBtn"); });
+document.getElementById("theme32254Btn").addEventListener("click", () => { document.body.className = "theme-32254"; setThemeBtn("theme32254Btn"); });
+document.getElementById("theme21363Btn").addEventListener("click", () => { document.body.className = "theme-21363"; setThemeBtn("theme21363Btn"); });
+function setThemeBtn(id) {
+  ["themeBothBtn","theme32254Btn","theme21363Btn"].forEach(b => document.getElementById(b).classList.remove("btn-active"));
+  document.getElementById(id).classList.add("btn-active");
+}
+
+document.getElementById("syncLiveBtn").addEventListener("click", syncFTCScout);
+document.getElementById("shareStateBtn").addEventListener("click", () => {
+  const hash = "#state=" + btoa(encodeURIComponent(JSON.stringify(matches)));
+  history.replaceState(null, "", hash);
+  navigator.clipboard?.writeText(location.href).catch(() => {});
+  showToast("Live snapshot URL updated & copied!");
+});
+document.getElementById("resetBtn").addEventListener("click", () => {
+  matches = JSON.parse(JSON.stringify(DEFAULT_MATCHES));
+  officialRankings = {};
+  history.replaceState(null, "", "#");
+  renderAll();
+  showToast("Reset to initial pre-event rankings!");
+});
+
+loadState();
+renderAll();
+</script>
+</body>
+  </html>
